@@ -4,13 +4,13 @@ if(isset($_POST['btn_save'])){
  
   // insert
   if($_POST['checkcrud'] == "insert"){
-    echo "show"; exit();
     $targetfolder = "upload_file/";
     $targetfolder = $targetfolder . basename( $_FILES['filename']['name']) ;
     $file_type = $_FILES['filename']['type'];
     $file_name = basename( $_FILES['filename']['name']);
     $size_file = $_FILES["filename"]["size"]; 
     if($_FILES['filename']['name']){
+      if($_FILES["filename"]["size"] <= 20971520  ){
        $sql = "INSERT INTO crud_video (filename , sizefile)
               VALUES ('$file_name', '$size_file')";
 
@@ -23,11 +23,20 @@ if(isset($_POST['btn_save'])){
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     
-  }
-    }else{
+     }
+
+    } else{
+      $message = "ขนาดไฟล์เกิน 50 MB";
+      echo ("<script type='text/javascript'>window.alert('$message');window.location.href='form.php'</script>");
+    }
+     }else{
       $message = "กรุณาเลือกไฟล์";
       echo ("<script type='text/javascript'>window.alert('$message');window.location.href='form.php'</script>");
     }
+
+    
+
+   
 
 
      $conn->close();
@@ -40,9 +49,10 @@ if(isset($_POST['btn_save'])){
     if($_FILES['filename']['tmp_name']){
       $file_name = basename( $_FILES['filename']['name']);
       $size_file = $_FILES["filename"]["size"]; 
-          }else{
+         }else{
       $file_name = $_POST['checkname'];
     }
+    if($_FILES["filename"]["size"] <= 20971520  ){
     $sql = "UPDATE crud_video SET filename='$file_name' , sizefile = '$size_file'   WHERE id = '$id'";
     if ($conn->query($sql) === TRUE) {
       $message = "อัพเดทข้อมูลสำเร็จ";
@@ -53,6 +63,10 @@ if(isset($_POST['btn_save'])){
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
+  }else{
+    $message = "ขนาดไฟล์เกิน 50 MB";
+    echo ("<script type='text/javascript'>window.alert('$message');window.location.href='form.php'</script>");
+  }
     $conn->close();
   }
 
@@ -92,7 +106,9 @@ if(isset($_POST['btn_save'])){
                         <input type="hidden" name="checkname" value="<?php echo $row['filename'];?>">
                         <p>ไฟล์ปัจจุบัน: <?php echo $row['filename'];?></p>
                         <input  class="form-control" type="file" name="filename" id="filename" placeholder="File Name" >
+                        <span>ขนาดไฟล์ไม่เกิน 50 MB*</span>
                     </div>
+                    
                     <input class="btn btn-primary mb-2" type="submit" name="btn_save" value="Upload">
                   </form>
                 <?php } ?>
@@ -102,7 +118,9 @@ if(isset($_POST['btn_save'])){
                         <label for="filename">Upload file *</label>
                         <input type="hidden" name="checkcrud" value="insert">
                         <input  class="form-control" type="file" name="filename" id="filename" placeholder="File Name">
+                        <span>ขนาดไฟล์ไม่เกิน 50 MB*</span>
                     </div>
+                    
                     <input class="btn btn-primary mb-2" type="submit" name="btn_save" value="Upload">
                   </form>
                 <?php } ?>
